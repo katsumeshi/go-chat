@@ -42,10 +42,12 @@ func main() {
 		google.New("585827492956-5teh7lk3a0hn8ak70icfb1bdp32i6k05.apps.googleusercontent.com", "iRauet0qEpvtmJOoe3ZbnIDM", "http://localhost:8080/auth/callback/google"),
 	)
 
-	r := newRoom(UserGravatar)
+	r := newRoom(UserFileSystemAvatar)
 	// r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
+	http.HandleFunc("/uploader", uploaderHandler)
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +60,9 @@ func main() {
 		w.Header().Set("Location", "/chat")
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	})
+	http.Handle("/avatars/",
+		http.StripPrefix("/avatars/",
+			http.FileServer(http.Dir("./avatars"))))
 
 	go r.run()
 

@@ -37,7 +37,6 @@ func (r *room) run() {
 		case msg := <-r.forward:
 			r.tracer.Trace("Message received: ", msg.Message)
 			for client := range r.clients {
-				log.Println("case msg := <-r.forward: ", msg)
 				client.send <- msg
 				r.tracer.Trace(" -- sent to client")
 			}
