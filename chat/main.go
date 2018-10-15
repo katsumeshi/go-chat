@@ -14,6 +14,12 @@ import (
 	"github.com/stretchr/gomniauth/providers/google"
 )
 
+var avatars Avatar = TryAvatars{
+	UserFileSystemAvatar,
+	UserAuthAvatar,
+	UserGravatar,
+}
+
 type templateHandler struct {
 	once     sync.Once
 	filename string
@@ -39,10 +45,10 @@ func main() {
 
 	gomniauth.SetSecurityKey("hogehoge")
 	gomniauth.WithProviders(
-		google.New("585827492956-5teh7lk3a0hn8ak70icfb1bdp32i6k05.apps.googleusercontent.com", "iRauet0qEpvtmJOoe3ZbnIDM", "http://localhost:8080/auth/callback/google"),
+		google.New("", "", "http://localhost:8080/auth/callback/google"),
 	)
 
-	r := newRoom(UserFileSystemAvatar)
+	r := newRoom()
 	// r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
